@@ -64,7 +64,6 @@ pip install sklearn
 pip install statsmodels
 pip install tensorflow
 
-
 # metabase
 dnf -y install java-11-openjdk
 cd /srv

@@ -6,35 +6,10 @@ Ambiente criado para que você possa mergulhar no mundo do data science.
 
 ## Para começar é muito simples
 
-Execute o comando no terminal
+Execute o comando no terminal para baixar a ultima versão.
 
     docker run -d -p 80:8888 --name expresso giovanirorato/expresso
 
-## 2.5
+## Para fazer criação da imagem via shell script
 
-- Inclusão do metabase.
-
-## 2.4
-
-- Imagem otimizada;
-- As mesmas funcionalidades da anterior só que com uma redução de quase 50% de memória.
-
-## 2.2.3
-
-- Tensorflow, Keras e Sqlite3
-
-## Veja o que já vem disponível
-
-- jupyterlab
-- cx-oracle
-- fbprophet
-- flake8
-- pip-chill
-- plotly
-- seaborn
-- sklearn
-- statsmodels
-- setuptools
-- tensorflow
-- keras
-- sqlite3
+    ./expresso.sh <version>
