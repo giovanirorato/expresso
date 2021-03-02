@@ -5,19 +5,19 @@ clear
 
 VERSION=$1
 
-echo "# Excluir automaticamente o container criado."
-if [ -n $(docker ps -aq -f name=expresso) ]; then
-  docker rm -f $(docker ps -aq -f name=expresso)
+echo "# Exclui se já tiver um conteiner criado anteriormente."
+if [ -n "$(docker ps -aq -f name=expresso)" ]; then
+  docker rm -f "$(docker ps -aq -f name=expresso)"
 fi
 
-if [ -n $(docker images -aq --filter=reference="giovanirorato/expresso:$VERSION") ]; then
-  echo "# Jä existe uma imagem com esse número de versão, Quer enviar a imagem para o Docker Hub? (S/N)"
+if [ -n "$(docker images -aq --filter=reference="giovanirorato/expresso:"$VERSION"")" ]; then
+  echo "# Jä existe uma imagem expresso:"$VERSION", Quer enviar a imagem para o Docker Hub? (S/N)"
   read resp
-  if [ $resp. = 'S.' ]; then
-    docker push giovanirorato/expresso:$VERSION
-    docker rmi -f $(docker images -aq --filter=reference="giovanirorato/expresso:$VERSION")
+  if [ "$resp." = "S." ]; then
+    docker push giovanirorato/expresso:"$VERSION"
+    docker rmi -f "$(docker images -aq --filter=reference="giovanirorato/expresso:"$VERSION"")"
   else
-    docker rmi -f $(docker images -aq --filter=reference="giovanirorato/expresso:$VERSION")
+    docker rmi -f "$(docker images -aq --filter=reference="giovanirorato/expresso:"$VERSION"")"
   fi
 fi
 
@@ -85,30 +85,30 @@ EOF
 echo "# Coloca o arquivo como executável."
 chmod +x expresso_docker.sh
 
-echo "# Comando docker de criação do expresso."
+echo "# Executa omando docker de criação do expresso."
 docker container run -d -p 80:8888 -p 3000:3000 -v /Users/giovani/Documents/dev:/root/expresso \
   -v /Users/giovani/Documents/dev/expresso/expresso_docker.sh:/tmp/expresso/expresso_docker.sh \
   --name expresso centos:latest ./tmp/expresso/expresso_docker.sh
 
-status_code=$(curl --write-out %{http_code} --silent --output /dev/null localhost)
+status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost)"
 
 while [[ "$status_code" -ne 302 ]]; do
-  # echo "Executa o comando $status_code"
+  # echo "Executa o comando "$status_code""
   printf "."
   sleep 5
-  status_code=$(curl --write-out %{http_code} --silent --output /dev/null localhost)
+  status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost)"
 done
 
 echo "# Cria a imagem do expresso."
-docker commit $(docker ps -q -f name=expresso) giovanirorato/expresso:$VERSION
+docker commit "$(docker ps -q -f name=expresso) giovanirorato/expresso:"$VERSION""
 
 echo "# Quer enviar a imagem para o Docker Hub? (S/N)"
 read resp
-if [ $resp. = 'S.' ]; then
-  docker push giovanirorato/expresso:$VERSION
+if [ "$resp." = "S." ]; then
+  docker push giovanirorato/expresso:"$VERSION"
 fi
 
 #calculando o tempo gasto
 tempogasto=$(($(date +%s) - $inicio))
 final=$(echo "scale=2; $tempogasto / 60" | bc -l)
-echo "# A imagem giovanirorato/expresso:$VERSION demorou: $final minutos para ser compilada!"
+echo "# A imagem giovanirorato/expresso:"$VERSION" demorou: $final minutos para ser compilada!"
