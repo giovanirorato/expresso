@@ -10,6 +10,10 @@ Execute o comando no terminal
 
     docker run -d -p 80:8888 --name expresso giovanirorato/expresso
 
+## 2.5
+
+- Inclusão do metabase.
+
 ## 2.4
 
 - Imagem otimizada;
