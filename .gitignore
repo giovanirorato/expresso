@@ -1,2 +1,8 @@
+# Gitignore
+
+## Diretório
+tmp
+
+##  Arquivos ignorados
 .ipynb_checkpoints
 .DS_Store
