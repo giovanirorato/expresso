@@ -8,9 +8,9 @@ Ambiente criado para que você possa mergulhar no mundo do data science.
 
 Execute o comando no terminal
 
-'''
+"""
 docker run -d -p 80:8888 --name expresso giovanirorato/expresso
-''''
+"""
 
 ## 2.4
 
