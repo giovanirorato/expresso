@@ -26,7 +26,7 @@ if [ -x "expresso_docker.sh" ]; then
   rm ./expresso_docker.sh
 fi
 
-echo "# Gera o scrip para executar dentro do docker."
+echo "# Gerando o scrip para rodar dentro do docker."
 cat <<EOF >>expresso_docker.sh
 #!/bin/bash
 
@@ -85,21 +85,47 @@ EOF
 echo "# Coloca o arquivo como executável."
 chmod +x expresso_docker.sh
 
-echo "# Executa omando docker de criação do expresso."
-docker container run -d -p 80:8888 -p 3000:3000 -v /Users/giovani/Documents/dev:/root/expresso \
+
+echo "# Gostaria de instalar o Metabase? (S/N)"
+read Metabase
+if test $% = 0
+then
+  echo Faltou informar a resposta.
+  exit 1
+fi
+
+
+echo "# Gerando o scrip para rodar dentro do docker."
+if test "$Metabase" = N
+then
+
+sed -n '37,45d' expresso_docker.sh
+
+echo "# Cria container expresso sem Metabase."
+docker container run -d -p 80:8888 -v /Users/giovani/Documents/dev:/root/expresso \
   -v /Users/giovani/Documents/dev/expresso/expresso_docker.sh:/tmp/expresso/expresso_docker.sh \
   --name expresso centos:latest ./tmp/expresso/expresso_docker.sh
+elif test "$Metabase" = S
+then
+echo "# Cria conteiner expresso com Metabase."
+docker container run -d -p 80:8888  -p 3000:3000 -v /Users/giovani/Documents/dev:/root/expresso \
+  -v /Users/giovani/Documents/dev/expresso/expresso_docker.sh:/tmp/expresso/expresso_docker.sh \
+  --name expresso centos:latest ./tmp/expresso/expresso_docker.sh
+fi
 
 status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost)"
 
-while [[ "$status_code" -ne 302 ]]; do
+while [[ "$status_code" -ne 302 ]];
+do
   # echo "Executa o comando "$status_code""
   printf "."
   sleep 5
   status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost)"
 done
 
+echo -e "\n"
 echo "# Cria a imagem do expresso."
+
 docker commit "$(docker ps -q -f name=expresso) giovanirorato/expresso:"$VERSION""
 
 echo "# Quer enviar a imagem para o Docker Hub? (S/N)"
@@ -112,3 +138,5 @@ fi
 tempogasto=$(($(date +%s) - $inicio))
 final=$(echo "scale=2; $tempogasto / 60" | bc -l)
 echo "# A imagem giovanirorato/expresso:"$VERSION" demorou: $final minutos para ser compilada!"
+
+exit
