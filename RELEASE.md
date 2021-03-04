@@ -3,6 +3,7 @@
 ## 2.6
 
 Instalação
+
     curl https://raw.githubusercontent.com/giovanirorato/expresso/main/expresso.sh | bash
 
 Novidades
