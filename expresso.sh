@@ -100,6 +100,7 @@ pip install seaborn
 pip install sklearn
 pip install statsmodels
 pip install tensorflow
+pip install scipy
 
 # metabase
 dnf -y install java-11-openjdk
@@ -127,7 +128,7 @@ echo -n "# Quer instalar o Metabase [S/N]: "
 read metabase
 if [ "$metabase" = "N" ]
 then
-  sed -in '37,45d' "$diretorio"/"$container_name"_docker.sh
+  sed -in '/# metabase/,+8 d' "$diretorio"/"$container_name"_docker.sh
   
   echo "# Cria container "$container_name" sem Metabase."
   docker container run -d -p 80:8888 \
