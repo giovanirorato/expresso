@@ -116,7 +116,6 @@ pip cache purge
 
 # execução do Jupyter
 jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''
-
 EOF
 
 
