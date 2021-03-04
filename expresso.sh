@@ -1,6 +1,4 @@
 #!/bin/bash
-trap 'do_something' ERR
-
 inicio=$(date +%s)
 
 clear
@@ -14,7 +12,7 @@ echo ""
 
 echo -n "# Insira um nome para o seu container: "
 read container_name
-if [ "$container_name" = 0 ];
+if [ "$container_name" = 0 ]
 then
   container_name="expresso"
 fi
@@ -22,25 +20,29 @@ fi
 
 echo -n "# Insira uma versão para a sua imagem no formato [1.0.0]: "
 read version
-if [ "$version" = "" ]; then
+if [ "$version" = "" ]
+then
   version="1.0.0"
 fi
 
 
 echo -n "# Imforme o diretório local para o Jupyter. [/<dir_atual>]: "
 read diretorio
-if [ "$diretorio" = "" ]; then
+if [ "$diretorio" = "" ]
+then
   diretorio=$(pwd)
 fi
 
 
-if [ -n "$(docker ps -aq -f name="$container_name")" ]; then
+if [ -n "$(docker ps -aq -f name="$container_name")" ]
+then
   echo "# Exclui imagem criada anteriormente."
   docker rm -f "$(docker ps -aq -f name="$container_name")"
 fi
 
 
-if [ -n "$(docker images -aq --filter=reference=""$container_name":"$version"")" ]; then
+if [ -n "$(docker images -aq --filter=reference=""$container_name":"$version"")" ]
+then
   echo -n "# Já existe uma imagem "$container_name":"$version", Quer mandar para o Docker Hub? [S/N] "
   read enviar_imagem
   if [ "$enviar_imagem." = "S." ]; then
@@ -54,7 +56,8 @@ if [ -n "$(docker images -aq --filter=reference=""$container_name":"$version"")"
 fi
 
 
-if [ -x ""$diretorio"/"$container_name"_docker.sh" ]; then
+if [ -x ""$diretorio"/"$container_name"_docker.sh" ]
+then
   echo "# Removendo arquivo anterior."
   rm "$diretorio"/"$container_name"_docker.sh
 fi
@@ -152,7 +155,7 @@ fi
 
 status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost)"
 
-while [[ "$status_code" -ne 302 ]];
+while [[ "$status_code" -ne 302 ]]
 do
   # echo "Executa o comando "$status_code""
   printf "."
@@ -169,9 +172,11 @@ then
 docker commit "$(docker ps -q -f name="$container_name") "$container_name":"$version""
 fi
 
+
 echo -n "# Quer enviar a imagem para o Docker Hub? Lembre-se de se logar antes. [S/N] "
 read docker_hub
-if [ "$docker_hub." = "S." ]; then
+if [ "$docker_hub." = "S." ]
+then
   echo -n # Coloque o nome do seu usuário: "
   read nome_usuario
   docker push "$nome_usuario"/"$container_name":"$version"
