@@ -14,7 +14,8 @@ echo ""
 
 echo -n "# Insira um nome para o seu container: "
 read container_name
-if [ "$container_name" = 0 ]; then
+if [ "$container_name" = 0 ];
+then
   container_name="expresso"
 fi
 
