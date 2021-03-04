@@ -8,7 +8,7 @@ echo "#                                                                         
 echo "#   Expresso - Ambiente Jupyter para seu desenvolvimento em Data Science   #"
 echo "#                                                                          #"
 echo "############################################################################"
-echo -e ""
+
 
 echo -n "# Insira um nome para o seu container: "
 read container_name
@@ -23,11 +23,13 @@ if [ "$version" = "" ]; then
   version="1.0.0"
 fi
 
+
 echo -n "# Imforme o diretório local para o Jupyter. [/<dir_atual>]: "
 read diretorio
 if [ "$diretorio" = "" ]; then
   diretorio=$(pwd)
 fi
+
 
 if [ -n "$(docker ps -aq -f name="$container_name")" ]; then
   echo "# Exclui imagem criada anteriormente."

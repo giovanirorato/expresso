@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+# Usage: curl https://raw.githubusercontent.com/giovanirorato/expresso/main/expresso.run | bash
+#
+# For more info, visit: https://github.com/giovanirorato/expresso
+#
+index_main() {
+    set -e
+    curl -s -S -L https://raw.githubusercontent.com/giovanirorato/expresso/main/expresso.sh | bash
+}
+
+index_main
