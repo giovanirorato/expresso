@@ -134,7 +134,7 @@ fi
 
 
 echo "# Gerando o scrip para rodar dentro do docker."
-if test "$Metabase" = N
+if test "$metabase" = N
 then
   sed -n '37,45d' "$diretorio"/"$container_name"_docker.sh
   
@@ -143,7 +143,7 @@ then
     -v "$diretorio":/root/"$container_name" \
     -v "$diretorio"/"$container_name"_docker.sh:/tmp/"$container_name"/"$container_name"_docker.sh \
     --name "$container_name" centos:latest ./tmp/"$container_name"/"$container_name"_docker.sh
-elif test "$Metabase" = S
+elif test "$metabase" = S
 then
   echo "# Cria container "$container_name" com Metabase."
   docker container run -d -p 80:8888 -p 3000:3000 \
@@ -169,7 +169,9 @@ echo -n "# Vamos criar uma imagem do "$container_name":"$version" [S/N]: "
 read criar_imagem
 if [ "$criar_imagem" = "S" ]
 then
-docker commit "$(docker ps -q -f name="$container_name") "$container_name":"$version""
+  echo -n # Coloque o nome do seu usuário Docker Hub para: "
+  read nome_usuario
+docker commit "$(docker ps -q -f name="$container_name") "$nome_usuario/"$container_name":"$version""
 fi
 
 
@@ -177,10 +179,9 @@ echo -n "# Quer enviar a imagem para o Docker Hub? Lembre-se de se logar antes. 
 read docker_hub
 if [ "$docker_hub." = "S." ]
 then
-  echo -n # Coloque o nome do seu usuário: "
-  read nome_usuario
   docker push "$nome_usuario"/"$container_name":"$version"
 fi
+
 
 # Tempo de execução.
 tempogasto=$(($(date +%s) - $inicio))
