@@ -182,7 +182,7 @@ then
   docker push "$nome_usuario"/"$container_name":"$version"
 fi
 
-echo "# calculando o tempo gasto"
+# Tempo de execução.
 tempogasto=$(($(date +%s) - $inicio))
 final=$(echo "scale=2; $tempogasto / 60" | bc -l)
 echo "# A imagem giovanirorato/"$container_name":"$version" demorou: $final minutos para ser compilada!"
