@@ -18,7 +18,7 @@ then
 fi
 
 
-echo -n "# Insira uma versão para a sua imagem no formato [1.0.0]: "
+echo -n "# Insira o número de versão para sua imagem no formato [1.0.0]: "
 read version
 if [ "$version" = "" ]
 then
@@ -128,7 +128,7 @@ echo -n "# Quer instalar o Metabase [S/N]: "
 read metabase
 if [ "$metabase" = "N" ]
 then
-  sed -in '/# metabase/,+8 d' "$diretorio"/"$container_name"_docker.sh
+  sed -in '/# metabase/,+8d' "$diretorio"/"$container_name"_docker.sh
   
   echo "# Cria container "$container_name" sem Metabase."
   docker container run -d -p 80:8888 \
@@ -169,7 +169,7 @@ fi
 
 echo -n "# Quer enviar a imagem para o Docker Hub? Lembre-se de se logar antes [S/N]: "
 read docker_hub
-if [ "$docker_hub." = "S." ]
+if [ "$docker_hub" = "S" ]
 then
   docker push "$nome_usuario"/"$container_name":"$version"
 fi
