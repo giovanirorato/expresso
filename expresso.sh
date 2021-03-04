@@ -1,5 +1,6 @@
 #!/bin/bash
-set -e
+trap 'do_something' ERR
+
 inicio=$(date +%s)
 
 clear
@@ -10,12 +11,15 @@ echo "#   Expresso - Ambiente Jupyter para seu desenvolvimento em Data Science  
 echo "#                                                                          #"
 echo "############################################################################"
 
+index_main() {
+  echo -n "# Insira um nome para o seu container: "
+  read container_name
+  if [ "$container_name" = 0 ]; then
+    container_name="expresso"
+  fi
+}
 
-echo -n "# Insira um nome para o seu container: "
-read container_name
-if [ "$container_name" = "" ]; then
-  container_name="expresso"
-fi
+index_main
 
 
 echo -n "# Insira uma versão para a sua imagem no formato [1.0.0]: "
