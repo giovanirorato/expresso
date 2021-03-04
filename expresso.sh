@@ -119,7 +119,6 @@ jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-br
 
 EOF
 
-
 echo "# Coloca o arquivo como executável."
 chmod +x "$diretorio"/"$container_name"_docker.sh
 
@@ -128,7 +127,7 @@ echo -n "# Quer instalar o Metabase [S/N]: "
 read metabase
 if [ "$metabase" = "N" ]
 then
-  sed -n '37,45d' "$diretorio"/"$container_name"_docker.sh
+  sed -in '37,45d' "$diretorio"/"$container_name"_docker.sh
   
   echo "# Cria container "$container_name" sem Metabase."
   docker container run -d -p 80:8888 \
