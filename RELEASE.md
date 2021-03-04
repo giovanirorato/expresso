@@ -1,13 +1,13 @@
 # RELEASE
 
+## 2.6
+
+- Seleciona opções passadas via bash.
+- Todo o processo criado via linha de comando bash.
+
 ## 2.5
 
-Novidades
-
 - Inclusão do metabase.
-
-Ajustes
-
 - Organização dos arquivos.
 
 ## 2.4
