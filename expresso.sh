@@ -10,16 +10,13 @@ echo "#                                                                         
 echo "#   Expresso - Ambiente Jupyter para seu desenvolvimento em Data Science   #"
 echo "#                                                                          #"
 echo "############################################################################"
+echo ""
 
-container_main() {
   echo -n "# Insira um nome para o seu container: "
   read container_name
   if [ "$container_name" = 0 ]; then
     container_name="expresso"
   fi
-}
-
-container_main
 
 
 echo -n "# Insira uma versão para a sua imagem no formato [1.0.0]: "
