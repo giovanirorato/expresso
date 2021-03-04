@@ -1,7 +1,7 @@
 # Gitignore
 
 ## Diretório
-tmp/
+.tmp/
 
 ##  Arquivos ignorados
 .ipynb_checkpoints
