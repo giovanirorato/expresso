@@ -124,7 +124,7 @@ chmod +x "$diretorio"/"$container_name"_docker.sh
 
 
 echo -n "# Gostaria de instalar o Metabase? [S/N]: "
-read Metabase
+read metabase
 if test $% = 0
 then
   echo Faltou informar a resposta.
