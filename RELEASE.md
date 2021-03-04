@@ -2,22 +2,12 @@
 
 ## 2.6
 
-Instalação
-
-    curl https://raw.githubusercontent.com/giovanirorato/expresso/main/expresso.sh | bash
-
-Novidades
 - Seleciona opções passadas via bash.
 - Todo o processo criado via linha de comando bash.
 
 ## 2.5
 
-Novidades
-
 - Inclusão do metabase.
-
-Ajustes
-
 - Organização dos arquivos.
 
 ## 2.4
