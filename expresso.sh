@@ -68,38 +68,38 @@ cat << EOF > "$diretorio"/"$container_name"_docker.sh
 #!/bin/bash
 
 # Atualiza o centos para upstream
-dnf -y swap centos-linux-repos centos-stream-repos
-dnf -y distro-sync
+#dnf -y swap centos-linux-repos centos-stream-repos
+#dnf -y distro-sync
 
 # Instalação de bibliotecas C e C++
-dnf -y install gcc
-dnf -y install gcc-c++
+#dnf -y install gcc
+#dnf -y install gcc-c++
 
 # Instalação do python3.8.6
 dnf -y install python38
-dnf -y install python38-devel
+#dnf -y install python38-devel
 
 # Pacotes adicionais
-dnf -y install vim
-dnf -y install ncurses
-dnf -y install sqlite
-dnf -y install wget
+#dnf -y install vim
+#dnf -y install ncurses
+#dnf -y install sqlite
+#dnf -y install wget
 
 # Upgrade do PIP
 pip3 install --upgrade pip
 
 # Instalação de pacotes PIP
-pip install cx-oracle
-pip install fbprophet
-pip install flake8
+#pip install cx-oracle
+# pip install fbprophet
+#pip install flake8
 pip install jupyterlab
-pip install keras
-pip install pip-chill
-pip install plotly
-pip install seaborn
-pip install sklearn
-pip install statsmodels
-pip install tensorflow
+#pip install keras
+#pip install pip-chill
+#pip install plotly
+#pip install seaborn
+#pip install sklearn
+#pip install statsmodels
+#pip install tensorflow
 
 # metabase
 dnf -y install java-11-openjdk
@@ -116,6 +116,7 @@ pip cache purge
 
 # execução do Jupyter
 jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''
+
 EOF
 
 
@@ -123,7 +124,7 @@ echo "# Coloca o arquivo como executável."
 chmod +x "$diretorio"/"$container_name"_docker.sh
 
 
-echo -n "# Quer instalar o Metabase. [S/N]"
+echo -n "# Quer instalar o Metabase [S/N]: "
 read metabase
 if [ "$metabase" = "N" ]
 then
@@ -160,9 +161,9 @@ echo -n "# Vamos criar uma imagem do "$container_name":"$version" [S/N]: "
 read criar_imagem
 if [ "$criar_imagem" = "S" ]
 then
-  echo -n # Coloque o nome do seu usuário Docker Hub para: "
+  echo -n "# Coloque o nome do seu usuário Docker Hub para: "
   read nome_usuario
-docker commit "$(docker ps -q -f name="$container_name") "$nome_usuario"/"$container_name":"$version"
+docker commit $(docker ps -q -f name="$container_name") "$nome_usuario"/"$container_name":"$version"
 fi
 
 
