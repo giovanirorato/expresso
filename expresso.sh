@@ -3,31 +3,60 @@ inicio=$(date +%s)
 
 clear
 
-VERSION=$1
+echo "############################################################################"
+echo "#                                                                          #"
+echo "#   Expresso - Ambiente Jupyter para seu desenvolvimento em Data Science   #"
+echo "#                                                                          #"
+echo "############################################################################"
+echo -e ""
 
-echo "# Exclui se já tiver um conteiner criado anteriormente."
-if [ -n "$(docker ps -aq -f name=expresso)" ]; then
-  docker rm -f "$(docker ps -aq -f name=expresso)"
+echo -n "# Insira um nome para o seu container: "
+read container_name
+if [ "$container_name" = "" ]; then
+  container_name="expresso"
 fi
 
-if [ -n "$(docker images -aq --filter=reference="giovanirorato/expresso:"$VERSION"")" ]; then
-  echo "# Jä existe uma imagem expresso:"$VERSION", Quer enviar a imagem para o Docker Hub? (S/N)"
-  read resp
-  if [ "$resp." = "S." ]; then
-    docker push giovanirorato/expresso:"$VERSION"
-    docker rmi -f "$(docker images -aq --filter=reference="giovanirorato/expresso:"$VERSION"")"
+
+echo -n "# Insira uma versão para a sua imagem no formato [1.0.0]: "
+read version
+if [ "$version" = "" ]; then
+  version="1.0.0"
+fi
+
+echo -n "# Imforme o diretório local para o Jupyter. [/<dir_atual>]: "
+read diretorio
+if [ "$diretorio" = "" ]; then
+  diretorio=$(pwd)
+fi
+
+if [ -n "$(docker ps -aq -f name="$container_name")" ]; then
+  echo "# Exclui imagem criada anteriormente."
+  docker rm -f "$(docker ps -aq -f name="$container_name")"
+fi
+
+
+if [ -n "$(docker images -aq --filter=reference=""$container_name":"$version"")" ]; then
+  echo -n "# Já existe uma imagem "$container_name":"$version", Quer mandar para o Docker Hub? [S/N] "
+  read enviar_imagem
+  if [ "$enviar_imagem." = "S." ]; then
+    echo -n "# Informe seu usuário: "
+    read nome_usuario
+    docker push "$nome_usuario"/"$container_name":"$version"
+    docker rmi -f "$(docker images -aq --filter=reference=""$nome_usuario"/"$container_name":"$version"")"
   else
-    docker rmi -f "$(docker images -aq --filter=reference="giovanirorato/expresso:"$VERSION"")"
+    docker rmi -f "$(docker images -aq --filter=reference=""$nome_usuario"/"$container_name":"$version"")"
   fi
 fi
 
-echo "# Remove arquivo temporario."
-if [ -x "expresso_docker.sh" ]; then
-  rm ./expresso_docker.sh
+
+if [ -x ""$diretorio"/"$container_name"_docker.sh" ]; then
+  echo "# Removendo arquivo anterior."
+  rm "$diretorio"/"$container_name"_docker.sh
 fi
 
+
 echo "# Gerando o scrip para rodar dentro do docker."
-cat <<EOF >>expresso_docker.sh
+cat << EOF > "$diretorio"/"$container_name"_docker.sh
 #!/bin/bash
 
 # Atualiza o centos para upstream
@@ -78,15 +107,16 @@ dnf clean all
 pip cache purge
 
 # execução do Jupyter
-jupyter-lab --allow-root --notebook-dir='/root/expresso' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''
+jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''
 
 EOF
 
+
 echo "# Coloca o arquivo como executável."
-chmod +x expresso_docker.sh
+chmod +x "$diretorio"/"$container_name"_docker.sh
 
 
-echo "# Gostaria de instalar o Metabase? (S/N)"
+echo -n "# Gostaria de instalar o Metabase? [S/N]: "
 read Metabase
 if test $% = 0
 then
@@ -98,20 +128,22 @@ fi
 echo "# Gerando o scrip para rodar dentro do docker."
 if test "$Metabase" = N
 then
-
-sed -n '37,45d' expresso_docker.sh
-
-echo "# Cria container expresso sem Metabase."
-docker container run -d -p 80:8888 -v /Users/giovani/Documents/dev:/root/expresso \
-  -v /Users/giovani/Documents/dev/expresso/expresso_docker.sh:/tmp/expresso/expresso_docker.sh \
-  --name expresso centos:latest ./tmp/expresso/expresso_docker.sh
+  sed -n '37,45d' "$diretorio"/"$container_name"_docker.sh
+  
+  echo "# Cria container "$container_name" sem Metabase."
+  docker container run -d -p 80:8888 \
+    -v "$diretorio":/root/"$container_name" \
+    -v "$diretorio"/"$container_name"_docker.sh:/tmp/"$container_name"/"$container_name"_docker.sh \
+    --name "$container_name" centos:latest ./tmp/"$container_name"/"$container_name"_docker.sh
 elif test "$Metabase" = S
 then
-echo "# Cria conteiner expresso com Metabase."
-docker container run -d -p 80:8888  -p 3000:3000 -v /Users/giovani/Documents/dev:/root/expresso \
-  -v /Users/giovani/Documents/dev/expresso/expresso_docker.sh:/tmp/expresso/expresso_docker.sh \
-  --name expresso centos:latest ./tmp/expresso/expresso_docker.sh
+  echo "# Cria container "$container_name" com Metabase."
+  docker container run -d -p 80:8888 -p 3000:3000 \
+    -v "$diretorio":/root/"$container_name" \
+    -v "$diretorio"/"$container_name"_docker.sh:/tmp/"$container_name"/"$container_name"_docker.sh \
+    --name "$container_name" centos:latest ./tmp/"$container_name"/"$container_name"_docker.sh
 fi
+
 
 status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost)"
 
@@ -123,20 +155,26 @@ do
   status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost)"
 done
 
+
 echo -e "\n"
-echo "# Cria a imagem do expresso."
-
-docker commit "$(docker ps -q -f name=expresso) giovanirorato/expresso:"$VERSION""
-
-echo "# Quer enviar a imagem para o Docker Hub? (S/N)"
-read resp
-if [ "$resp." = "S." ]; then
-  docker push giovanirorato/expresso:"$VERSION"
+echo -n "# Vamos criar uma imagem do "$container_name":"$version" [S/N]: " 
+read criar_imagem
+if [ "$criar_imagem" = "S." ]
+then
+docker commit "$(docker ps -q -f name="$container_name") "$container_name":"$version""
 fi
 
-#calculando o tempo gasto
+echo -n "# Quer enviar a imagem para o Docker Hub? Lembre-se de se logar antes. [S/N] "
+read docker_hub
+if [ "$docker_hub." = "S." ]; then
+  echo -n # Coloque o nome do seu usuário: "
+  read nome_usuario
+  docker push "$nome_usuario"/"$container_name":"$version"
+fi
+
+echo "# calculando o tempo gasto"
 tempogasto=$(($(date +%s) - $inicio))
 final=$(echo "scale=2; $tempogasto / 60" | bc -l)
-echo "# A imagem giovanirorato/expresso:"$VERSION" demorou: $final minutos para ser compilada!"
+echo "# A imagem giovanirorato/"$container_name":"$version" demorou: $final minutos para ser compilada!"
 
 exit

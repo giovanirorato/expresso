@@ -12,4 +12,4 @@ Execute o comando no terminal para baixar a ultima versão.
 
 ## Para fazer criação da imagem via shell script
 
-    ./expresso.sh <version>
+    curl https://raw.githubusercontent.com/giovanirorato/expresso/main/expresso.sh | bash
