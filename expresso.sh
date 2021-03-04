@@ -167,7 +167,7 @@ done
 echo -e "\n"
 echo -n "# Vamos criar uma imagem do "$container_name":"$version" [S/N]: " 
 read criar_imagem
-if [ "$criar_imagem" = "S." ]
+if [ "$criar_imagem" = "S" ]
 then
 docker commit "$(docker ps -q -f name="$container_name") "$container_name":"$version""
 fi
