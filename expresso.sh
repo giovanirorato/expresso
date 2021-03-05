@@ -56,13 +56,6 @@ then
 fi
 
 
-if [ -x ""$diretorio"/"$container_name"_docker.sh" ]
-then
-  echo "# Removendo arquivo anterior."
-  rm "$diretorio"/"$container_name"_docker.sh
-fi
-
-
 echo "# Gerando o scrip para rodar dentro do docker."
 cat << EOF > "$diretorio"/"$container_name"_docker.sh
 #!/bin/bash
@@ -172,6 +165,12 @@ read docker_hub
 if [ "$docker_hub" = "S" ]
 then
   docker push "$nome_usuario"/"$container_name":"$version"
+fi
+
+
+if [ -x ""$diretorio"/"$container_name"_docker.sh" ]
+then
+  rm "$diretorio"/"$container_name"_docker.sh*
 fi
 
 
