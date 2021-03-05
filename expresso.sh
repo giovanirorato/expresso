@@ -121,7 +121,7 @@ echo -n "# Quer instalar o Metabase [S/N]: "
 read metabase
 if [ "$metabase" = "N" ]
 then
-  sed -i -n '/# metabase/,+8d' "$diretorio"/"$container_name"_docker.sh
+  sed -n -i '/# metabase/,+8d' "$diretorio"/"$container_name"_docker.sh
   
   echo "# Cria container "$container_name" sem Metabase."
   docker container run -d -p 80:8888 \
