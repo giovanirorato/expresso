@@ -6,6 +6,7 @@ clear
 echo "############################################################################"
 echo "#                                                                          #"
 echo "#   Expresso - Ambiente Jupyter para seu desenvolvimento em Data Science   #"
+echo "#              https://github.com/giovanirorato/expresso                   #"
 echo "#                                                                          #"
 echo "############################################################################"
 echo ""
