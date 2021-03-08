@@ -1,14 +1,16 @@
 #!/bin/bash
+# TODO(Giovani) Porta 80 - ter a possibilidade de usar outra porta.
 inicio=$(date +%s)
 
 clear
 
-echo "############################################################################"
-echo "#                                                                          #"
-echo "#   Expresso - Ambiente Jupyter para seu desenvolvimento em Data Science   #"
-echo "#              https://github.com/giovanirorato/expresso                   #"
-echo "#                                                                          #"
-echo "############################################################################"
+echo ""
+echo "###########################################################################"
+echo "#                                                                         #"
+echo "#  Expresso - Ambiente Jupyter para seu desenvolvimento em Data Science   #"
+echo "#             https://github.com/giovanirorato/expresso                   #"
+echo "#                                                                         #"
+echo "###########################################################################"
 echo ""
 
 
@@ -33,28 +35,39 @@ then
 fi
 
 
-if [ -n "$(docker ps -aq -f name="$container_name")" ]
+if [ -n "$(docker ps -aq -f name=expresso_base)" ]
 then
     echo "# Exclui container criado anteriormente."
-    docker rm -f "$(docker ps -aq -f name="$container_name")"
+    docker rm -f "$(docker ps -aq -f name=expresso_base)"
 fi
 
 
 if [ -n "$(docker images -aq --filter=reference="$container_name:$version")" ]
 then
     read -p "# Já existe uma imagem "$container_name":"$version", Quer mandar para o Docker Hub? [s/n] " enviar_imagem
-    if [ "$enviar_imagem" = "s" ]; then
-        echo -n "# Informe seu usuário: "
-        read nome_usuario
+    if [ "$enviar_imagem" = "s" ]
+    then
+        read -p "# Informe seu usuário: " nome_usuario
         docker push "$nome_usuario"/"$container_name":"$version"
+        if [ -n "$(docker ps -aq -f name="$container_name")" ]
+        then
+            echo "# Exclui container criado anteriormente."
+            docker rm -f "$(docker ps -aq -f name="$container_name")"
+        fi
         docker rmi -f "$(docker images -aq --filter=reference=""$nome_usuario"/"$container_name":"$version"")"
     else
-        docker rmi -f "$(docker images -aq --filter=reference=""$nome_usuario"/"$container_name":"$version"")"
+        echo "Excluindo imagem de mesmo nome criado anteriormente."
+        if [ -n "$(docker ps -aq -f name="$container_name")" ]
+        then
+            echo "# Exclui container criado anteriormente."
+            docker rm -f "$(docker ps -aq -f name="$container_name")"
+        fi
+        docker rmi -f "$( docker images -aq --filter=reference=""$nome_usuario"/"$container_name":"$version"" | docker images -aq --filter=reference=""$container_name":"$version"" )"
     fi
 fi
 
 
-# Exclui conteúdo temporário
+# Exclui arquivo temporário criado anteriormente.
 rm -rf "$diretorio"/"$container_name"_docker.sh
 
 
@@ -79,23 +92,28 @@ dnf -y install vim
 dnf -y install ncurses
 dnf -y install sqlite
 dnf -y install wget
+dnf -y module install nodejs:12
 
 # Upgrade do PIP
 pip3 install --upgrade pip
 
 # Instalação de pacotes PIP
-pip install jupyterlab
+pip install beautifulsoup4
+pip install bokeh
 pip install cx-oracle
 pip install fbprophet
 pip install flake8
+pip install jupyterlab
 pip install keras
 pip install pip-chill
 pip install plotly
+pip install pydot
+pip install scrapy
 pip install seaborn
 pip install sklearn
 pip install statsmodels
 pip install tensorflow
-pip install scipy
+pip install xgboost
 
 # Limpeza dos arquivos de cache
 dnf clean all
@@ -120,6 +138,13 @@ EOF
 chmod +x "$diretorio"/"$container_name"_docker.sh
 
 
+if [ -n "$(docker ps -aq -f name="$container_name")" ]
+then
+    echo "# Exclui container criado anteriormente."
+    docker rm -f "$(docker ps -aq -f name="$container_name")"
+fi
+
+
 read -p "# Quer instalar o Metabase [s/n]: " metabase 
 if [ "$metabase" = "n" ] || [ -z "$metabase" ]
 then
@@ -129,7 +154,7 @@ then
     docker container run -d -p 80:8888 \
         -v "$diretorio":/root/"$container_name" \
         -v "$diretorio"/"$container_name"_docker.sh:/tmp/"$container_name"_docker.sh \
-        --name "$container_name" centos:latest ./tmp/"$container_name"_docker.sh \
+        --name expresso_base centos:latest ./tmp/"$container_name"_docker.sh \
         bash -c "jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''"
 elif [ "$metabase" = "s" ]
 then
@@ -137,7 +162,7 @@ then
     docker container run -d -p 80:8888 -p 3000:3000 \
         -v "$diretorio":/root/"$container_name" \
         -v "$diretorio"/"$container_name"_docker.sh:/tmp/"$container_name"_docker.sh \
-        --name "$container_name" centos:latest ./tmp/"$container_name"_docker.sh \
+        --name expresso_base centos:latest ./tmp/"$container_name"_docker.sh \
         bash -c "jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''"
 fi
 
@@ -146,43 +171,48 @@ status_code="$(curl --write-out %{http_code} --silent --output /dev/null localho
 
 while [[ "$status_code" -ne 302 ]]
 do
-    # echo "Executa o comando "$status_code""
     printf "."
     sleep 5
     status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost)"
 done
+echo ""
 
 
-# Realiza o Commit da imagem
-docker commit $(docker ps -q -f name="$container_name") "$container_name":"$version"
+echo "# Realiza o commit da nova imagem, apaga expresso_base e o centos:latest."
+docker commit $(docker ps -q -f name=expresso_base) "$container_name":"$version" && \
+docker rm -f expresso_base && \
 docker rmi -f centos:latest
 
 
 read -p "# Quer enviar a imagem para o Docker Hub? Lembre-se de se logar antes [s/n]: " docker_hub
 if [ "$docker_hub" = "s" ]
 then
-    echo -n "# Coloque o nome do seu usuário Docker Hub: "
-    read nome_usuario
+    read -p "# Coloque o nome do seu usuário Docker Hub: " nome_usuario
     docker push "$nome_usuario"/"$container_name":"$version"
 fi
 
 
-# Exclui conteúdo temporário
+echo "# Exclui conteúdo temporário"
 rm -rf "$diretorio"/"$container_name"_docker.sh
 
 
-# Remove o container base
-docker rm -f "$(docker ps -aq -f name="$container_name")"
+if [ -n "$(docker ps -aq -f name="$container_name")" ]
+then
+    echo "# Exclui container criado anteriormente."
+    docker rm -f "$(docker ps -aq -f name="$container_name")"
+fi
 
 
 if [ "$metabase" = "n" ]
 then
+    echo "Cria o container definifivo."
     docker container run -d -p 80:8888 \
         -v "$diretorio":/root/"$container_name" \
         --name "$container_name" "$container_name":"$version" \
         bash -c "jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''"
 elif [ "$metabase" = "s" ]
 then
+    echo "Cria o conteainer definitivo com Metabase."
     docker container run -d -p 80:8888 -p 3000:3000 \
         -v "$diretorio":/root/"$container_name" \
         --name "$container_name" "$container_name":"$version" \
@@ -191,6 +221,7 @@ fi
 
 
 # Tempo de execução.
+echo "# Fim"
 tempogasto=$(($(date +%s) - $inicio))
 final=$(echo "scale=2; $tempogasto / 60" | bc -l)
 echo "# A imagem "$container_name":"$version" demorou: $final minutos para ser compilada!"
