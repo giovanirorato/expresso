@@ -96,6 +96,7 @@ pip install cx-oracle
 pip install fbprophet
 pip install flake8
 pip install jupyterlab
+pip install pylint
 pip install keras
 pip install pip-chill
 pip install plotly
@@ -106,7 +107,6 @@ pip install sklearn
 pip install statsmodels
 pip install tensorflow
 pip install nbdime
-pip install --upgrade jupyterlab-git
 pip install xgboost
 
 # Limpeza dos arquivos de cache
