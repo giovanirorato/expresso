@@ -1,6 +1,6 @@
 # expresso
 
-Começa a desenvolver os seus projetos em Data Science com o Expresso.
+Começe a desenvolver os seus projetos em Data Science com o Expresso.
 
 Ambiente criado para que você possa mergulhar no mundo do data science.
 
