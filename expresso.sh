@@ -83,7 +83,7 @@ dnf -y install ncurses
 dnf -y install sqlite
 dnf -y install wget
 dnf -y install git
-dnf -y module install nodejs:12
+dnf -y module install nodejs:14
 
 # Upgrade do PIP
 pip3 install --upgrade pip
