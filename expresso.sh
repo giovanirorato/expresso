@@ -165,14 +165,14 @@ if [ "$metabase" = "n" ] || [ -z "$metabase" ]; then
   docker container run -d -p 80:8888 \
     -v "$diretorio":/root/"$container_name" \
     -v "$diretorio"/"$container_name"_docker.sh:/tmp/"$container_name"_docker.sh \
-    --name ""$container_name"_base" centos:latest ./tmp/"$container_name"_docker.sh \
+    --name expresso_base centos:latest ./tmp/"$container_name"_docker.sh \
     bash -c "jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''"
 elif [ "$metabase" = "s" ]; then
   echo "# Cria container "$container_name" com Metabase."
   docker container run -d -p 80:8888 -p 3000:3000 \
     -v "$diretorio":/root/"$container_name" \
     -v "$diretorio"/"$container_name"_docker.sh:/tmp/"$container_name"_docker.sh \
-    --name ""$container_name"_base" centos:latest ./tmp/"$container_name"_docker.sh \
+    --name expreso_base centos:latest ./tmp/"$container_name"_docker.sh \
     bash -c "jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''"
 fi
 
