@@ -8,14 +8,14 @@ inicio=$(date +%s)
 
 clear
 
-echo ""
+echo
 echo "###########################################################################"
 echo "#                                                                         #"
 echo "#  Expresso - Ambiente Jupyter para seu desenvolvimento em Data Science   #"
 echo "#             https://github.com/giovanirorato/expresso                   #"
 echo "#                                                                         #"
 echo "###########################################################################"
-echo ""
+echo
 
 
 read -p "# Insira um nome para o seu container: [expresso] " container_name
