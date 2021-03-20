@@ -2,7 +2,6 @@
 #
 # Expresso - Ambiente Jupyter para seu desenvolvimento em Data Science
 # TODO(Giovani) Porta 80 - ter a possibilidade de usar outra porta quando subir uma imagem.
-set -e
 
 inicio=$(date +%s)
 
@@ -16,7 +15,6 @@ echo "#             https://github.com/giovanirorato/expresso                   
 echo "#                                                                         #"
 echo "###########################################################################"
 echo
-
 
 read -p "# Insira um nome para o seu container: [expresso] " container_name
 if [ -z "$container_name" ]; then
@@ -33,9 +31,9 @@ if [ -z "$diretorio" ]; then
   diretorio=$(pwd)
 fi
 
-if [ -n "$(docker ps -aq -f name=expresso_base)" ]; then
+if [ -n "$(docker ps -aq -f name=""$container_name"_base")" ]; then
   echo "# Exclui container criado anteriormente."
-  docker rm -f "$(docker ps -aq -f name=expresso_base)"
+  docker rm -f "$(docker ps -aq -f name=""$container_name"_base")"
 fi
 
 if [ -n "$(docker images -aq --filter=reference="$container_name:$version")" ]; then
@@ -88,14 +86,16 @@ dnf -y module install nodejs:14
 # Upgrade do PIP
 pip3 install --upgrade pip
 
-# Instalação de pacotes PIP
+# Instalação Limpa
+pip install jupyterlab
+
+# Instalação Completa
 pip install beautifulsoup4
 pip install pipreqs
 pip install bokeh
 pip install cx-oracle
 pip install fbprophet
 pip install flake8
-pip install jupyterlab
 pip install pylint
 pip install keras
 pip install pip-chill
@@ -124,7 +124,6 @@ nohup java -jar /srv/metabase.jar &
 
 # execução do Jupyter
 jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''
-
 EOF
 
 # Coloca o arquivo como executável.
@@ -135,7 +134,28 @@ if [ -n "$(docker ps -aq -f name="$container_name")" ]; then
   docker rm -f "$(docker ps -aq -f name="$container_name")"
 fi
 
-read -p "# Quer instalar o Metabase [s/n]: " metabase 
+echo "
+# 2 opções de instalação:
+  - Limpa [l]:
+    - jupyterlab
+  - Completa [c]:
+    - beautifulsoup4    - plotly
+    - bokeh             - pydot
+    - cx-oracle         - pylint
+    - fbprophet         - scrapy
+    - flake8            - seaborn
+    - keras             - sklearn
+    - nbdime            - statsmodels
+    - pip-chill         - tensorflow
+    - pipreqs           - xgboost
+"
+
+read -p "# Selecione instalação [l] Limpa ou [c] Completa. [l/c]: " limpa_completa
+if [ "$limpa_completa" = "l" ] || [ -z "$limpa_completa" ]; then
+  sed -i '' -e '/# Instalação Completa/,+19d' "$diretorio"/"$container_name"_docker.sh
+fi
+
+read -p "# Quer instalar o Metabase [s/n]: " metabase
 if [ "$metabase" = "n" ] || [ -z "$metabase" ]; then
   sed -i '' -e '/# Metabase/,+8d' "$diretorio"/"$container_name"_docker.sh
 
@@ -143,14 +163,14 @@ if [ "$metabase" = "n" ] || [ -z "$metabase" ]; then
   docker container run -d -p 80:8888 \
     -v "$diretorio":/root/"$container_name" \
     -v "$diretorio"/"$container_name"_docker.sh:/tmp/"$container_name"_docker.sh \
-    --name expresso_base centos:latest ./tmp/"$container_name"_docker.sh \
+    --name "$container_name"_base centos:latest ./tmp/"$container_name"_docker.sh \
     bash -c "jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''"
 elif [ "$metabase" = "s" ]; then
   echo "# Cria container "$container_name" com Metabase."
   docker container run -d -p 80:8888 -p 3000:3000 \
     -v "$diretorio":/root/"$container_name" \
     -v "$diretorio"/"$container_name"_docker.sh:/tmp/"$container_name"_docker.sh \
-    --name expresso_base centos:latest ./tmp/"$container_name"_docker.sh \
+    --name "$container_name"_base centos:latest ./tmp/"$container_name"_docker.sh \
     bash -c "jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''"
 fi
 
@@ -161,11 +181,11 @@ while [[ "$status_code" -ne 302 ]]; do
   sleep 5
   status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost)"
 done
-echo ""
 
-echo "# Realiza o commit da nova imagem, apaga expresso_base e o centos:latest."
-docker commit $(docker ps -q -f name=expresso_base) "$container_name":"$version" && \
-docker rm -f expresso_base && \
+echo
+echo "# Realiza o commit da nova imagem, apaga "$container_name"_base e o centos:latest."
+docker commit $(docker ps -q -f name=""$container_name"_base") "$container_name":"$version" && \
+docker rm -f "$container_name"_base && \
 docker rmi -f centos:latest
 
 read -p "# Quer enviar a imagem para o Docker Hub? Lembre-se de se logar antes [s/n]: " docker_hub
@@ -198,8 +218,8 @@ fi
 
 # Tempo de execução.
 echo "# Fim"
-tempogasto=$(($(date +%s) - $inicio))
-final=$(echo "scale=2; $tempogasto / 60" | bc -l)
+tempo_gasto=$(($(date +%s) - $inicio))
+final=$(echo "scale=2; $tempo_gasto / 60" | bc -l)
 echo "# A imagem "$container_name":"$version" demorou: $final minutos para ser compilada!"
 
 exit
