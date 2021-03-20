@@ -33,9 +33,9 @@ if [ -z "$diretorio" ]; then
   diretorio=$(pwd)
 fi
 
-if [ -n "$(docker ps -aq -f name="$container_name"_base)" ]; then
+if [ -n "$(docker ps -aq -f name=""$container_name"_base")" ]; then
   echo "# Exclui container criado anteriormente."
-  docker rm -f "$(docker ps -aq -f name="$container_name"_base)"
+  docker rm -f "$(docker ps -aq -f name=""$container_name"_base")"
 fi
 
 if [ -n "$(docker images -aq --filter=reference="$container_name:$version")" ]; then
@@ -165,14 +165,14 @@ if [ "$metabase" = "n" ] || [ -z "$metabase" ]; then
   docker container run -d -p 80:8888 \
     -v "$diretorio":/root/"$container_name" \
     -v "$diretorio"/"$container_name"_docker.sh:/tmp/"$container_name"_docker.sh \
-    --name "$container_name"_base centos:latest ./tmp/"$container_name"_docker.sh \
+    --name ""$container_name"_base" centos:latest ./tmp/"$container_name"_docker.sh \
     bash -c "jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''"
 elif [ "$metabase" = "s" ]; then
   echo "# Cria container "$container_name" com Metabase."
   docker container run -d -p 80:8888 -p 3000:3000 \
     -v "$diretorio":/root/"$container_name" \
     -v "$diretorio"/"$container_name"_docker.sh:/tmp/"$container_name"_docker.sh \
-    --name "$container_name"_base centos:latest ./tmp/"$container_name"_docker.sh \
+    --name ""$container_name"_base" centos:latest ./tmp/"$container_name"_docker.sh \
     bash -c "jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''"
 fi
 
@@ -183,8 +183,8 @@ while [[ "$status_code" -ne 302 ]]; do
   sleep 5
   status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost)"
 done
-echo
 
+echo
 echo "# Realiza o commit da nova imagem, apaga "$container_name"_base e o centos:latest."
 docker commit $(docker ps -q -f name=""$container_name"_base") "$container_name":"$version" && \
 docker rm -f "$container_name"_base && \
