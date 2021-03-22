@@ -1,7 +1,6 @@
 #!/bin/bash
 #
 # Expresso - Ambiente Jupyter para seu desenvolvimento em Data Science
-# TODO(Giovani) Porta 80 - ter a possibilidade de usar outra porta quando subir uma imagem.
 
 inicio=$(date +%s)
 
@@ -29,6 +28,28 @@ fi
 read -p "# Imforme o diretório local para o Jupyter: [$(pwd)] " diretorio
 if [ -z "$diretorio" ]; then
   diretorio=$(pwd)
+fi
+
+read -p "# Definina a porta do Jupyterlab: [80] " porta
+if [ -z "$porta" ]; then
+  porta=80
+  status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost:$porta)"
+    while [[ "$status_code" -eq 302 || "$porta" -eq 0 ]]; do
+      porta=$(expr $porta + 1)
+      read -p "# A Porta que você escolheu está em uso ou é inválida, deseja escolher outra? [$porta] " porta
+      status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost:$porta)" 
+    done
+else
+  status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost:$porta)"
+    while [[ "$status_code" -eq 302 || "$porta" -eq 0 ]]; do
+      porta=$(expr $porta + 1)
+      porta2=$porta
+      read -p "# A Porta que você escolheu está em uso ou é inválida, deseja escolher outra? [$porta] " porta
+      if [ -z "$porta" ]; then
+        porta=$porta2
+      fi
+      status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost:$porta)"
+    done
 fi
 
 if [ -n "$(docker ps -aq -f name=""$container_name"_base")" ]; then
@@ -160,26 +181,26 @@ if [ "$metabase" = "n" ] || [ -z "$metabase" ]; then
   sed -i '' -e '/# Metabase/,+8d' "$diretorio"/"$container_name"_docker.sh
 
   echo "# Cria container "$container_name" sem Metabase."
-  docker container run -d -p 80:8888 \
+  docker container run -d -p "$porta":8888 \
     -v "$diretorio":/root/"$container_name" \
     -v "$diretorio"/"$container_name"_docker.sh:/tmp/"$container_name"_docker.sh \
     --name "$container_name"_base centos:latest ./tmp/"$container_name"_docker.sh \
     bash -c "jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''"
 elif [ "$metabase" = "s" ]; then
   echo "# Cria container "$container_name" com Metabase."
-  docker container run -d -p 80:8888 -p 3000:3000 \
+  docker container run -d -p "$porta":8888 -p 3000:3000 \
     -v "$diretorio":/root/"$container_name" \
     -v "$diretorio"/"$container_name"_docker.sh:/tmp/"$container_name"_docker.sh \
     --name "$container_name"_base centos:latest ./tmp/"$container_name"_docker.sh \
     bash -c "jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''"
 fi
 
-status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost)"
+status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost:$porta)"
 
 while [[ "$status_code" -ne 302 ]]; do
   printf "."
   sleep 5
-  status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost)"
+  status_code="$(curl --write-out %{http_code} --silent --output /dev/null localhost:$porta)"
 done
 
 echo
@@ -204,13 +225,13 @@ fi
 
 if [ "$metabase" = "n" ]; then
   echo "Cria o container definifivo."
-  docker container run -d -p 80:8888 \
+  docker container run -d -p "$porta":8888 \
     -v "$diretorio":/root/"$container_name" \
     --name "$container_name" "$container_name":"$version" \
     bash -c "jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''"
 elif [ "$metabase" = "s" ]; then
   echo "Cria o conteainer definitivo com Metabase."
-  docker container run -d -p 80:8888 -p 3000:3000 \
+  docker container run -d -p "$porta":8888 -p 3000:3000 \
     -v "$diretorio":/root/"$container_name" \
     --name "$container_name" "$container_name":"$version" \
     bash -c "jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''"
