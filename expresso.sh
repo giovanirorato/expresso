@@ -15,10 +15,33 @@ echo "#                                                                         
 echo "###########################################################################"
 echo
 
+# if [ -n "$(docker ps -aq -f name="$container_name")" ]; then
+#   echo "# Exclui container criado anteriormente."
+#   docker rm -f "$(docker ps -aq -f name="$container_name")"
+# fi
+
+if [ -n "$(docker ps -aq -f name="$container_name")" ]; then
+  read -p "# Já existe um container com esse nome deseja excluir? [s|n] " excluir_container
+  elif [[ -z "$excluir_container" || "$excluir_container" -eq "s" ]]; then
+    docker rm -f "$(docker ps -aq -f name="$container_name")"
+  else
+    read -p "# Defina um novo nome. [expresso] " container_name
+      while  []
+fi
+
+
 read -p "# Insira um nome para o seu container: [expresso] " container_name
 if [ -z "$container_name" ]; then
   container_name="expresso"
+  elif [ -n "$(docker ps -aq -f name="$container_name")" ]; then
+    read -p "# Já existe um container com esse nome deseja excluir? [s|n] " excluir_container
+    elif [[ -z "$excluir_container" || "$excluir_container" -eq "s" ]]; then
+      docker rm -f "$(docker ps -aq -f name="$container_name")"
+    else
+      read -p "# Defina um novo nome. [expresso] " container_name
 fi
+
+exit
 
 read -p "# Insira o número de versão para sua imagem no formato: [1.0.0] " version
 if [ -z "$version" ]; then
@@ -150,11 +173,6 @@ EOF
 # Coloca o arquivo como executável.
 chmod +x "$diretorio"/"$container_name"_docker.sh
 
-if [ -n "$(docker ps -aq -f name="$container_name")" ]; then
-  echo "# Exclui container criado anteriormente."
-  docker rm -f "$(docker ps -aq -f name="$container_name")"
-fi
-
 echo "
 # 2 opções de instalação:
   - Limpa [l]:
@@ -171,7 +189,7 @@ echo "
     - pipreqs           - xgboost
 "
 
-read -p "# Selecione instalação [l] Limpa ou [c] Completa. [l/c]: " limpa_completa
+read -p "# Selecione instalação [l] Limpa ou [c] Completa. [l|c]: " limpa_completa
 if [ "$limpa_completa" = "l" ] || [ -z "$limpa_completa" ]; then
   sed -i '' -e '/# Instalação Completa/,+19d' "$diretorio"/"$container_name"_docker.sh
 fi
@@ -209,13 +227,6 @@ docker commit $(docker ps -q -f name=""$container_name"_base") "$container_name"
 docker rm -f "$container_name"_base && \
 docker rmi -f centos:latest
 
-read -p "# Quer enviar a imagem para o Docker Hub? Lembre-se de se logar antes [s/n]: " docker_hub
-if [ "$docker_hub" = "s" ]; then
-  read -p "# Coloque o nome do seu usuário Docker Hub: " nome_usuario
-  docker push "$nome_usuario"/"$container_name":"$version"
-fi
-
-echo "# Exclui conteúdo temporário"
 rm -rf "$diretorio"/"$container_name"_docker.sh
 
 if [ -n "$(docker ps -aq -f name="$container_name")" ]; then
@@ -235,6 +246,12 @@ elif [ "$metabase" = "s" ]; then
     -v "$diretorio":/root/"$container_name" \
     --name "$container_name" "$container_name":"$version" \
     bash -c "jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''"
+fi
+
+read -p "# Quer enviar a imagem para o Docker Hub? Lembre-se de se logar antes [s/n]: " docker_hub
+if [ "$docker_hub" = "s" ]; then
+  read -p "# Coloque o nome do seu usuário Docker Hub: " nome_usuario
+  docker push "$nome_usuario"/"$container_name":"$version"
 fi
 
 # Tempo de execução.
