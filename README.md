@@ -6,6 +6,11 @@ Ambiente criado para que você possa mergulhar no mundo do data science.
 
 O ambiente usa o docker para criar o seu ambiente.
 
+## Requisitos
+
+- MacOS ou Linux
+- Docker
+
 ## Para fazer criação da imagem via shell script
 
 Abra um terminal shell e execute o comando abaixo.
