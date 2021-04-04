@@ -3,10 +3,10 @@
 ## 1.1.1
 
 - Ajustes do controle de versão.
-- Seleção da porta do jupyter.
-- Melhoria na lógica da escolha do nome.
+- Seleção da porta do Jupyter.
+- Melhoria na lógica da escolha do nome do container.
 - Pergunta se quer excluir versões com o mesmo nome.
-- Exclusão das opções que enviada uma imagem para o hub-docker.
+- Exclusão das opções que enviava uma imagem para o Docker Hub.
 
 ## 2.6
 
