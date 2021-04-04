@@ -5,8 +5,7 @@
 - Ajustes do controle de versão.
 - Seleção da porta do jupyter.
 - Melhoria na lógica da escolha do nome.
-- Pergunta se que excluir versões com o mesmo nome.
-- Melhoria no envio da imagem para Hub-Docker.
+- Pergunta se quer excluir versões com o mesmo nome.
 - Exclusão das opções que enviada uma imagem para o hub-docker.
 
 ## 2.6
