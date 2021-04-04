@@ -22,3 +22,5 @@ Link curto
 -->
 
     bash <(curl -s https://raw.githubusercontent.com/giovanirorato/expresso/main/expresso.sh)
+
+## Releases

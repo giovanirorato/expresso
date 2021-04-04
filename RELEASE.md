@@ -1,5 +1,13 @@
 # RELEASE
 
+## 1.1.1
+
+- Ajustes do controle de versão.
+- Seleção da porta do Jupyter.
+- Melhoria na lógica da escolha do nome do container.
+- Pergunta se quer excluir versões com o mesmo nome.
+- Exclusão das opções que enviava uma imagem para o Docker Hub.
+
 ## 2.6
 
 - Seleciona opções passadas via bash.
