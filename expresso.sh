@@ -9,7 +9,7 @@
 
 inicio=$(date +%s)
 
-version_atual=1.1.0
+version_atual=1.1.1
 
 clear
 
