@@ -5,7 +5,7 @@
 # Repo:             https://github.com/giovanirorato/expresso
 # Title:            expresso
 # Author:           Giovani Rorato
-# Version:          1.1.0
+# Version:          1.1.1
 
 inicio=$(date +%s)
 
