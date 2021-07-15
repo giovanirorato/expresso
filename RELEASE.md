@@ -1,5 +1,9 @@
 # RELEASE
 
+## 1.2.1
+
+- Uso de ambientes virtuais com Pyenv.
+
 ## 1.1.1
 
 - Ajustes do controle de versão.

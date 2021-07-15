@@ -5,11 +5,21 @@
 # Repo:             https://github.com/giovanirorato/expresso
 # Title:            expresso
 # Author:           Giovani Rorato
-# Version:          1.1.1
+# Version:          1.2.1
 
 inicio=$(date +%s)
 
-version_atual=1.1.1
+version_atual=1.2.1
+
+pyenv_bashrc='cat << EOF >> ~/.bashrc
+
+# Pyenv
+export PYENV_ROOT="/root/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init --path)"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+EOF'
 
 clear
 
@@ -22,6 +32,7 @@ echo "#                                                                       #"
 echo "#########################################################################"
 echo
 
+# Nome do conteiner
 read -p "# Insira um nome para o seu container: [expresso] " container_name
 if [ -z "$container_name" ]; then
   container_name="expresso"
@@ -42,9 +53,16 @@ if [[ -z "$container_name" || -n "$(docker ps -aq -f name="$container_name")" ]]
   esac
 fi
 
+# Versão da imagem
 read -p "# Insira o número de versão para sua imagem no formato: [$version_atual] " version
 if [ -z "$version" ]; then
   version=$version_atual
+fi
+
+# Versão da instalação do python
+read -p "# Insira a versão do python que irá usar.: [3.8.11] " python
+if [ -z "$python" ]; then
+  python=3.8.11
 fi
 
 read -p "# Imforme o diretório local para o Jupyter: [$(pwd)] " diretorio
@@ -93,21 +111,31 @@ dnf -y distro-sync
 ## Ajuste de Timezone
 RUN ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
 
-# Instalação de bibliotecas C e C++
-dnf -y install gcc
-dnf -y install gcc-c++
-
-# Instalação do python3.8.6
-dnf -y install python38
-dnf -y install python38-devel
-
 # Pacotes adicionais
 dnf -y install vim
 dnf -y install ncurses
-dnf -y install sqlite
 dnf -y install wget
 dnf -y install git
 dnf -y module install nodejs:14
+
+# Requisitos do Pyenv
+dnf -y install make gcc gcc-c++ zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel tk-devel libffi-devel xz-devel
+
+# Instalação do Pyenv
+curl https://pyenv.run | bash
+
+$pyenv_bashrc
+
+source ~/.bashrc
+
+# Instalação da versão do Python escolhida
+pyenv install $python
+
+# Criando e instalando o ambiente virtual
+pyenv virtualenv $python $container_name
+
+cd /root/$container_name
+pyenv local $container_name
 
 # Upgrade do PIP
 pip3 install --upgrade pip
