@@ -11,7 +11,7 @@ inicio=$(date +%s)
 
 version_atual=1.2.1
 
-pyenv_bashrc='cat << EOF >> ~/.bashrc
+pyenv_cshrc='cat << EOF >> ~/.cshrc
 
 # Pyenv
 export PYENV_ROOT="/root/.pyenv"
@@ -124,9 +124,9 @@ dnf -y install make gcc gcc-c++ zlib-devel bzip2 bzip2-devel readline-devel sqli
 # Instalação do Pyenv
 curl https://pyenv.run | bash
 
-$pyenv_bashrc
+$pyenv_cshrc
 
-source ~/.bashrc
+source ~/.cshrc
 
 # Instalação da versão do Python escolhida
 pyenv install $python
