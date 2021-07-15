@@ -11,16 +11,6 @@ inicio=$(date +%s)
 
 version_atual=1.2.1
 
-pyenv_cshrc='cat << EOF >> ~/.cshrc
-
-# Pyenv
-export PYENV_ROOT="/root/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init --path)"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-EOF'
-
 clear
 
 echo
@@ -124,9 +114,9 @@ dnf -y install make gcc gcc-c++ zlib-devel bzip2 bzip2-devel readline-devel sqli
 # Instalação do Pyenv
 curl https://pyenv.run | bash
 
-$pyenv_cshrc
+wget -q https://raw.githubusercontent.com/giovanirorato/expresso/release_1.2.1/.bashrc -O ~/.bashrc
 
-source ~/.cshrc
+source ~/.bashrc
 
 # Instalação da versão do Python escolhida
 pyenv install $python
