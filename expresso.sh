@@ -124,6 +124,7 @@ pyenv install $python
 # Criando e instalando o ambiente virtual
 pyenv virtualenv $python $container_name
 
+mkdir /root/$container_name
 cd /root/$container_name
 pyenv local $container_name
 
@@ -167,6 +168,7 @@ cd ..
 nohup java -jar /srv/metabase.jar &
 
 # execução do Jupyter
+cd /root/$container_name
 jupyter-lab --allow-root --notebook-dir='/root/$container_name' --ip='*' --no-browser --NotebookApp.token='' --NotebookApp.password=''
 EOF
 
