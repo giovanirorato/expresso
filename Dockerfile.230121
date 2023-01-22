@@ -1,0 +1,53 @@
+FROM quay.io/centos/centos:stream9
+
+# Ajuste de timezone
+RUN ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
+
+# Atualizações de sistema
+RUN dnf -y install epel-release \
+    && dnf -y update \
+    && dnf install epel-release \
+    && dnf -y install git vim bash-completion \
+    && dnf -y install gcc make zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel tk-devel libffi-devel xz-devel \
+    && dnf clean all
+
+# Instalação do Pyenv
+RUN curl https://pyenv.run | bash
+
+# Ajuste do arquivo .bashrc
+RUN echo -e '\n# Pyenv\nexport PYENV_ROOT="$HOME/.pyenv"\ncommand -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+
+ENV PYENV_ROOT=$HOME/.pyenv
+ENV PATH=$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
+RUN echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+
+RUN ~/.pyenv/bin/pyenv update
+
+#RUN /bin/bash -c ". ~/.bashrc"
+
+# Variáveis de otimização do Python
+#ENV CONFIGURE_OPTS="--enable-optimizations"
+#ENV MAKE_OPTS="-j2"
+#ENV CFLAGS_OPTS="-O2" 
+#ENV CXXFLAGS_OPTS="-O2"
+
+# Instalação do python
+RUN ~/.pyenv/bin/pyenv install 3.11.1
+RUN ~/.pyenv/bin/pyenv virtualenv 3.11.1 expresso
+
+WORKDIR /root/dev
+
+# Variáveis pyenv
+#ENV PYENV_ROOT="$HOME/.pyenv"
+#ENV PATH="$PYENV_ROOT/bin:$PATH"
+
+#WORKDIR /root/dev
+
+RUN ~/.pyenv/bin/pyenv local expresso
+
+RUN /.pyenv/shims/pip install -U pip
+RUN /.pyenv/shims/pip install jupyterlab
+RUN /.pyenv/shims/pip cache purge
+
+EXPOSE 8888
+CMD ["jupyter-lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", "--NotebookApp.token=''", "--NotebookApp.password=''"]
