@@ -11,7 +11,7 @@ ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:${PATH}"
 
 # Update system
 RUN dnf -y update \
-    && dnf -y install git vim bash-completion \
+    && dnf -y install git vim bash-completion wget \
     && dnf -y install gcc make zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel tk-devel libffi-devel xz-devel \
     && dnf clean all
 
@@ -41,7 +41,9 @@ RUN pyenv global expresso
 
 # Update pip and install jupyterlab
 RUN pip install -U pip
-RUN pip install jupyterlab
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+RUN pyenv global system && pyenv local expresso
 
 # Expose port and launch JupyterLab
 EXPOSE 8888

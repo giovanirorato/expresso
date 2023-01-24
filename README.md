@@ -23,4 +23,10 @@ Link curto
 
     bash <(curl -s https://raw.githubusercontent.com/giovanirorato/expresso/main/expresso.sh)
 
-## Releases
+    bash <(curl -s https://raw.githubusercontent.com/giovanirorato/expresso/main/expresso_docker.sh)
+
+## Comandos
+
+    docker build -t giovanirorato/expresso .
+
+    docker run -dit -v /Users/giovani/Documents/dev:/root/expresso -p 8888:8888 --name expresso giovanirorato/expresso
