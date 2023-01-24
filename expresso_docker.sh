@@ -30,5 +30,4 @@ wget https://raw.githubusercontent.com/giovanirorato/expresso/main/Dockerfile
 
 docker build -t $container_name .
 
-
 docker run -dit -v $diretorio:/root/expresso -p $porta:8888 --name $container_name $container_name
