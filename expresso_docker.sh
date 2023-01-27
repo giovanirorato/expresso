@@ -28,5 +28,5 @@ fi
 
 curl -o Dockerfile https://raw.githubusercontent.com/giovanirorato/expresso/main/Dockerfile
 
-docker build -t --build-arg container=$container_name $container_name . \
+docker build -t --build-arg container=$container_name -t $container_name . \
 && docker run -dit -v $diretorio:/root/$container_name -p $porta:8888 --name $container_name $container_name
