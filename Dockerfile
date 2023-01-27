@@ -3,8 +3,9 @@ FROM quay.io/centos/centos:stream9
 # Adjust timezone
 RUN ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
 
-# Arguments
-ARG NUM_PROCESSES
+# Number os process
+RUN NUM_PROCESSES="$(nproc)" && \
+    echo "Number of processors: $NUM_PROCESSES"
 
 # Variables and Workdir
 ENV HOME="/root"
