@@ -28,13 +28,6 @@ fi
 
 curl -o Dockerfile https://raw.githubusercontent.com/giovanirorato/expresso/main/Dockerfile
 
-echo $(nproc)
-echo $diretorio
-echo $container_name
-echo $porta
-
-exit
-
 docker build -t $container_name .
 
 docker run -dit -v $diretorio:/root/expresso -p $porta:8888 --name $container_name $container_name
