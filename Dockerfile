@@ -3,6 +3,9 @@ FROM quay.io/centos/centos:stream9
 # Adjust timezone
 RUN ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
 
+# Arguments
+ARG NUM_PROCESSES
+
 # Variables and Workdir
 ENV HOME="/root"
 WORKDIR ${HOME}/expresso
@@ -27,7 +30,8 @@ RUN exec "$SHELL"
 
 # Optimization for Python
 ENV CONFIGURE_OPTS="--enable-optimizations"
-ENV MAKE_OPTS="-j2"
+RUN echo "Number of processors: $NUM_PROCESSES"
+ENV MAKE_OPTS "-j$NUM_PROCESSES"
 ENV CFLAGS_OPTS="-O2" 
 ENV CXXFLAGS_OPTS="-O2"
 
