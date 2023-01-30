@@ -4,13 +4,13 @@ FROM quay.io/centos/centos:stream9
 RUN ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
 
 # Number os process
-ARG container=expresso
+ARG container_name=expresso
 RUN NUM_PROCESSES="$(nproc)" && \
     echo "Number of processors: $NUM_PROCESSES"
 
 # Variables and Workdir
 ENV HOME="/root"
-WORKDIR ${HOME}/${container}
+WORKDIR ${HOME}/${container_name}
 ENV PYENV_ROOT="${HOME}/.pyenv"
 ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:${PATH}"
 
@@ -41,16 +41,16 @@ RUN pyenv update
 ENV LATEST_PYTHON_VERSION=$(pyenv install --list | grep -E "^\s*[0-9]+\.[0-9]+\.[0-9]+$" | tail -n 1)
 RUN pyenv install $LATEST_PYTHON_VERSION
 
-RUN pyenv virtualenv $LATEST_PYTHON_VERSION ${container}
+RUN pyenv virtualenv $LATEST_PYTHON_VERSION ${container_name}
 
 # Set virtualenv
-RUN pyenv global ${container}
+RUN pyenv global ${container_name}
 
 # Update pip and install jupyterlab
 RUN pip install -U pip
 COPY requirements.txt .
 RUN pip install -r requirements.txt
-RUN pyenv global system && pyenv local ${container}
+RUN pyenv global system && pyenv local ${container_name}
 
 # Expose port and launch JupyterLab
 EXPOSE 8888
