@@ -27,6 +27,7 @@ if [ -z "$diretorio" ]; then
 fi
 
 curl -o Dockerfile https://raw.githubusercontent.com/giovanirorato/expresso/main/Dockerfile
+curl -o requirements.txt https://raw.githubusercontent.com/giovanirorato/expresso/main/requirements.txt
 
 docker build --build-arg container=$container_name -t $container_name .
 

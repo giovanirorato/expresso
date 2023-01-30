@@ -32,15 +32,16 @@ RUN exec "$SHELL"
 
 # Optimization for Python
 ENV CONFIGURE_OPTS="--enable-optimizations"
-RUN echo "Number of processors: $NUM_PROCESSES"
 ENV MAKE_OPTS "-j$NUM_PROCESSES"
 ENV CFLAGS_OPTS="-O2" 
 ENV CXXFLAGS_OPTS="-O2"
 
 # Install Python
 RUN pyenv update
-RUN pyenv install 3.11.1
-RUN pyenv virtualenv 3.11.1 ${container}
+ENV LATEST_PYTHON_VERSION=$(pyenv install --list | grep -E "^\s*[0-9]+\.[0-9]+\.[0-9]+$" | tail -n 1)
+RUN pyenv install $LATEST_PYTHON_VERSION
+
+RUN pyenv virtualenv $LATEST_PYTHON_VERSION ${container}
 
 # Set virtualenv
 RUN pyenv global ${container}
