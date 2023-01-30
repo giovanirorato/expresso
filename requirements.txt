@@ -1,3 +1,5 @@
 jupyterlab
 pip-chill
 pandas
+lxml
+html5lib

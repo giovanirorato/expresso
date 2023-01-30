@@ -5,6 +5,7 @@ RUN ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
 
 # Number os process
 ARG container_name=expresso
+ENV LATEST_PYTHON_VERSION=3.11.1
 RUN NUM_PROCESSES="$(nproc)" && \
     echo "Number of processors: $NUM_PROCESSES"
 
@@ -38,7 +39,6 @@ ENV CXXFLAGS_OPTS="-O2"
 
 # Install Python
 RUN pyenv update
-ENV LATEST_PYTHON_VERSION=$(pyenv install --list | grep -E "^\s*[0-9]+\.[0-9]+\.[0-9]+$" | tail -n 1)
 RUN pyenv install $LATEST_PYTHON_VERSION
 
 RUN pyenv virtualenv $LATEST_PYTHON_VERSION ${container_name}
