@@ -6,8 +6,7 @@ RUN ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
 # Number os process
 ARG container_name=expresso
 ENV LATEST_PYTHON_VERSION=3.11.1
-RUN NUM_PROCESSES="$(nproc)" && \
-    echo "Number of processors: $NUM_PROCESSES"
+RUN NUM_PROCESSES="$(nproc)"
 
 # Variables and Workdir
 ENV HOME="/root"
