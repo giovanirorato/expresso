@@ -32,7 +32,7 @@ RUN exec "$SHELL"
 
 # Optimization for Python
 ENV CONFIGURE_OPTS="--enable-optimizations"
-ENV MAKE_OPTS "-j$NUM_PROCESSES"
+ENV MAKE_OPTS="-j$NUM_PROCESSES"
 ENV CFLAGS_OPTS="-O2" 
 ENV CXXFLAGS_OPTS="-O2"
 
