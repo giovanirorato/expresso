@@ -5,7 +5,7 @@ RUN ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
 
 # Number os process
 ARG container_name=expresso
-ENV LATEST_PYTHON_VERSION=3.11.1
+ENV LATEST_PYTHON_VERSION=3.11.2
 RUN NUM_PROCESSES="$(nproc)"
 
 # Variables and Workdir
@@ -31,7 +31,7 @@ RUN echo 'eval "$(pyenv init -)"' >> ~/.bashrc
 RUN exec "$SHELL"
 
 # Optimization for Python
-ENV CONFIGURE_OPTS="--enable-optimizations"
+ENV CONFIGURE_OPTS="--enable-optimizations --with-lto"
 ENV MAKE_OPTS="-j$NUM_PROCESSES"
 ENV CFLAGS_OPTS="-O2" 
 ENV CXXFLAGS_OPTS="-O2"
